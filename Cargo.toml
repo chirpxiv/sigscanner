@@ -1,0 +1,12 @@
+[package]
+name = "sigscanner"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "sigscanner"
+path = "src/dllmain.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+libc = "^0.2.139"
