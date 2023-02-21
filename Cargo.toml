@@ -7,6 +7,3 @@ edition = "2021"
 name = "sigscanner"
 path = "src/dllmain.rs"
 crate-type = ["cdylib"]
-
-[dependencies]
-libc = "^0.2.139"
