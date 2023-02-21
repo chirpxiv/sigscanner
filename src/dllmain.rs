@@ -16,7 +16,7 @@ unsafe extern "C" fn find_sig(base_addr: *const u8, mod_size: usize, sig_ptr: *c
 	let sig_str = CStr::from_ptr(sig_ptr).to_str().unwrap();
 	let parsed = parse_sig_str(sig_str);
 
-	// not ideal but this is an optimisation overall because accesing vectors is slow
+	// not ideal but this is an optimisation overall because accessing vectors is slow
 	let sig_bytes = parsed.as_slice();
 	let sig_len = sig_bytes.len();
 
