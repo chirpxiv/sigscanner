@@ -1,28 +1,19 @@
-use std::ffi::{CStr, c_char};
+// Dependencies
 
-fn parse_sig_str(sig: &str) -> Vec<Option<u8>> {
-	let split: Vec<&str> = sig.split(" ").collect();
-	split.into_iter().map(|x| {
-		if x == "??" {
-			None
-		} else {
-			Some(u8::from_str_radix(x, 16).unwrap())
-		}
-	}).collect()
-}
+use crate::signatures;
 
-#[no_mangle]
-unsafe extern "C" fn find_sig(base_addr: *const u8, mod_size: usize, sig_ptr: *const c_char) -> *const u8 {
-	let sig_str = CStr::from_ptr(sig_ptr).to_str().unwrap();
-	let parsed = parse_sig_str(sig_str);
+use std::ffi::c_char;
 
+// Scan memory for sig vec
+
+pub unsafe fn find_sig(start_addr: *const u8, size: usize, sig: Vec<Option<u8>>) -> *const u8 {
 	// not ideal but this is an optimisation overall because accessing vectors is slow
-	let sig_bytes = parsed.as_slice();
+	let sig_bytes = sig.as_slice();
 	let sig_len = sig_bytes.len();
 
 	let mut sig_index = 0;
-	for i in 0 .. mod_size {
-		let ptr = base_addr.add(i);
+	for i in 0 .. size {
+		let ptr = start_addr.add(i);
 
 		let sig_byte = sig_bytes[sig_index];
 		let matches = match sig_byte {
@@ -45,6 +36,13 @@ unsafe extern "C" fn find_sig(base_addr: *const u8, mod_size: usize, sig_ptr: *c
 			sig_index = 0;
 		}
 	}
+	
+	std::ptr::null()
+}
 
-	return std::ptr::null();
+// Parse sig from CStr pointer and scan memory
+
+pub unsafe fn find_sig_cstr(start_addr: *const u8, size: usize, sig_ptr: *const c_char) -> *const u8 {
+	let sig = signatures::parse_sig_cstr(sig_ptr);
+	find_sig(start_addr, size, sig)
 }
