@@ -1,9 +1,4 @@
 [package]
 name = "sigscanner"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2021"
-
-[lib]
-name = "sigscanner"
-path = "src/lib.rs"
-crate-type = ["cdylib"]

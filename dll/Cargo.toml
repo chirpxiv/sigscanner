@@ -1,0 +1,12 @@
+[package]
+name = "sigscanner_dll"
+version = "0.2.1"
+edition = "2021"
+
+[lib]
+name = "sigscanner"
+path = "export.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+sigscanner = { path = ".." }
