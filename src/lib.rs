@@ -1,7 +1,7 @@
 // Modules
 
-mod pointer;
+mod internal;
+use internal::*;
 
-pub mod scanning;
-pub mod sections;
-pub mod signatures;
+mod module;
+pub use module::*;
