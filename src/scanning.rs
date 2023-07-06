@@ -2,7 +2,10 @@
 
 use crate::signatures;
 
-use std::ffi::c_char;
+use std::{
+	ptr,
+	ffi::c_char
+};
 
 // Scan memory for sig vec
 
@@ -37,7 +40,7 @@ pub unsafe fn find_sig(start_addr: *const u8, size: usize, sig: Vec<Option<u8>>)
 		}
 	}
 	
-	std::ptr::null()
+	ptr::null()
 }
 
 // Parse sig from CStr pointer and scan memory
