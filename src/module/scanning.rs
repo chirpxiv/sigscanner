@@ -12,9 +12,8 @@ use crate::{
 
 use std::{
 	ptr,
-	ffi::c_char
+	ffi::{CStr, c_char}
 };
-use std::ffi::CStr;
 
 // Scan memory for sig vec
 
@@ -71,13 +70,9 @@ pub unsafe fn get_module_sections(base_addr: *const u8) -> Vec<Section> {
 }
 
 pub unsafe fn lookup_section_name(base_addr: *const u8, name: &str) -> Option<Section> {
-	let sections = get_module_sections(base_addr);
-	for section in sections {
-		if section.name == name {
-			return Some(section);
-		}
-	}
-	None
+	get_module_sections(base_addr)
+		.into_iter()
+		.find(|section| section.name == name)
 }
 
 pub unsafe fn lookup_section_cstr(base_addr: *const u8, name: *const c_char) -> Option<Section> {

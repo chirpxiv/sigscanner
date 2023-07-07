@@ -42,7 +42,7 @@ fn read_section_table(file: &mut File, length: u16) -> Result<Vec<Section>> {
 	Ok(result)
 }
 
-// Sections
+// Section metadata
 
 pub fn get_sections_from(file: &mut File) -> Result<Vec<Section>> {
 	let cursor = file.stream_position()?;
@@ -57,4 +57,20 @@ pub fn get_sections_from(file: &mut File) -> Result<Vec<Section>> {
 	let result = read_section_table(file, pe_header.section_ct);
 	file.seek(Start(cursor)).ok();
 	result
+}
+
+pub fn lookup_file_section(file: &mut File, name: &str) -> Option<Section> {
+	get_sections_from(file)
+		.ok()?
+		.into_iter()
+		.find(|section| section.name == name)
+}
+
+// Section reading
+
+pub fn read_section(file: &mut File, section: &Section) -> Result<Vec<u8>> {
+	let mut buffer = vec![0u8; section.size];
+	file.seek(Start(section.base as u64))?;
+	file.read_exact(&mut buffer)?;
+	Ok(buffer)
 }
