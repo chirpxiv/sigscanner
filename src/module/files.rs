@@ -39,7 +39,6 @@ fn read_section_table(file: &mut File, length: u16) -> Result<Vec<Section>> {
 	file.read_exact(&mut buffer)?;
 
 	let result = unsafe { parse_section_table(buffer.as_ptr(), length) };
-	println!("got that result");
 	Ok(result)
 }
 
