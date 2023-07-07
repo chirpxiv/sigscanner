@@ -1,11 +1,20 @@
 // Dependencies
 
-use crate::signatures;
+pub use crate::headers::{Section, PeHeader};
+
+use crate::{
+	signatures::parse_sig_cstr,
+	headers::{
+		parse_pe_header,
+		parse_section_table
+	}
+};
 
 use std::{
 	ptr,
 	ffi::c_char
 };
+use std::ffi::CStr;
 
 // Scan memory for sig vec
 
@@ -43,9 +52,35 @@ pub unsafe fn find_sig(start_addr: *const u8, size: usize, sig: Vec<Option<u8>>)
 	ptr::null()
 }
 
-// Parse sig from CStr pointer and scan memory
-
 pub unsafe fn find_sig_cstr(start_addr: *const u8, size: usize, sig_ptr: *const c_char) -> *const u8 {
-	let sig = signatures::parse_sig_cstr(sig_ptr);
+	let sig = parse_sig_cstr(sig_ptr);
 	find_sig(start_addr, size, sig)
+}
+
+// Section lookup
+
+pub unsafe fn get_pe_header(base_addr: *const u8) -> PeHeader {
+	parse_pe_header(base_addr)
+}
+
+pub unsafe fn get_module_sections(base_addr: *const u8) -> Vec<Section> {
+	let header = get_pe_header(base_addr);
+
+	let addr = base_addr.add(header.get_sections_offset());
+	parse_section_table(addr, header.coff.section_ct)
+}
+
+pub unsafe fn lookup_section_name(base_addr: *const u8, name: &str) -> Option<Section> {
+	let sections = get_module_sections(base_addr);
+	for section in sections {
+		if section.name == name {
+			return Some(section);
+		}
+	}
+	None
+}
+
+pub unsafe fn lookup_section_cstr(base_addr: *const u8, name: *const c_char) -> Option<Section> {
+	let name = CStr::from_ptr(name).to_str().ok()?;
+	lookup_section_name(base_addr, name)
 }
