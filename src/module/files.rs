@@ -74,3 +74,7 @@ pub fn read_section(file: &mut File, section: &Section) -> Result<Vec<u8>> {
 	file.read_exact(&mut buffer)?;
 	Ok(buffer)
 }
+
+pub fn read_section_name(file: &mut File, name: &str) -> Option<Vec<u8>> {
+	lookup_file_section(file, name).and_then(|section| read_section(file, &section).ok())
+}
