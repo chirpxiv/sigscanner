@@ -51,8 +51,9 @@ unsafe extern "C" fn GetSectionTable(base_addr: *const u8, ptr: *mut *const u8) 
 }
 
 #[no_mangle]
-unsafe extern "C" fn LookupSectionName(base_addr: *const u8, name: *const c_char) -> *const u8 {
+unsafe extern "C" fn LookupSectionName(base_addr: *const u8, name: *const c_char, size: *mut usize) -> *const u8 {
 	if let Some(section) = lookup_section_cstr(base_addr, name) {
+		*size = section.size;
 		base_addr.add(section.base)
 	} else {
 		ptr::null()
